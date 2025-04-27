@@ -12,10 +12,10 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.skillsync</groupId>
-    <artifactId>skillsync</artifactId>
+    <groupId>com.foodlearning</groupId>
+    <artifactId>foodlearning</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>skillsync</name>
+    <name>foodlearning</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
