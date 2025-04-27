@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SkillsyncApplication {
+public class foodlearningApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SkillsyncApplication.class, args);
+		SpringApplication.run(foodlearningApplication.class, args);
 	}
 
 }
