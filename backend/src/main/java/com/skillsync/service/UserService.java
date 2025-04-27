@@ -1,12 +1,11 @@
-package com.foodlearing.service;
+package com.skillsync.service;
 
+import com.skillsync.entity.User;
+import com.skillsync.repo.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.foodlearing.entity.User;
-import com.foodlearing.repo.UserRepository;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.foodlearing.entity;
+package com.skillsync.entity;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

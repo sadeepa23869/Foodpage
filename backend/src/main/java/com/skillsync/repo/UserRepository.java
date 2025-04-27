@@ -1,9 +1,8 @@
-package com.foodlearing.repo;
+package com.skillsync.repo;
 
+import com.skillsync.entity.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-
-import com.foodlearing.entity.User;
 
 import java.util.Optional;
 

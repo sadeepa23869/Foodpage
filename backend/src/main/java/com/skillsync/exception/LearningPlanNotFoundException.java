@@ -1,4 +1,4 @@
-package com.foodlearing.exception;
+package com.skillsync.exception;
 
 import java.io.Serial;
 

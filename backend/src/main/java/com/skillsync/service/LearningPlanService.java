@@ -1,10 +1,9 @@
-package com.foodlearing.service;
+package com.skillsync.service;
 
+import com.skillsync.entity.LearningPlan;
+import com.skillsync.repo.LearningPlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.foodlearing.entity.LearningPlan;
-import com.foodlearing.repo.LearningPlanRepository;
 
 import java.util.List;
 

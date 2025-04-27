@@ -1,9 +1,8 @@
-package com.foodlearing.repo;
+package com.skillsync.repo;
 
+import com.skillsync.entity.LearningPlan;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-
-import com.foodlearing.entity.LearningPlan;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,13 +1,12 @@
-package com.foodlearing.controller;
+package com.skillsync.controller;
 
+import com.skillsync.entity.User;
+import com.skillsync.security.JwtService;
+import com.skillsync.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.foodlearing.entity.User;
-import com.foodlearing.security.JwtService;
-import com.foodlearing.service.UserService;
 
 import java.util.List;
 

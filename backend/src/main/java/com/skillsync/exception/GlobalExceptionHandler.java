@@ -1,4 +1,4 @@
-package com.foodlearing.exception;
+package com.skillsync.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

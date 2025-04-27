@@ -1,11 +1,10 @@
-package com.foodlearing.dto;
+package com.skillsync.dto;
 
+import com.skillsync.entity.FollowInfo;
+import com.skillsync.entity.LearningPlan;
 import lombok.Data;
 
 import java.util.List;
-
-import com.foodlearing.entity.FollowInfo;
-import com.foodlearing.entity.LearningPlan;
 
 @Data
 public class UserDTO {

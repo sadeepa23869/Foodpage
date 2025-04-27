@@ -1,4 +1,4 @@
-package com.foodlearing.security;
+package com.skillsync.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
