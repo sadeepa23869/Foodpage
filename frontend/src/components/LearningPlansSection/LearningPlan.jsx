@@ -4,7 +4,9 @@ import * as Yup from "yup";
 
 const LearningPlanCard = ({ plan, onEdit, onDelete }) => (
   <div className="bg-white rounded-lg shadow-md p-6 mb-6 max-w-xl mx-auto border border-gray-200">
-    <h3 className="text-2xl font-semibold mb-2 text-blue-700">{plan.name}</h3>
+<h3 className="text-2xl font-semibold mb-2" style={{ color: '#f5e042' }}>
+  {plan.name}
+</h3>
     <p className="mb-4 text-gray-700">{plan.description}</p>
     <div className="mb-2">
       <strong className="text-gray-800">Topics:</strong>

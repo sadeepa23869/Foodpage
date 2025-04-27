@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../../assets/logo.png";
+import logo from "../../assert/logo.png";
 import { NavigationMenu } from "../Navigation/NavigationMenu"; // Corrected import
 import { useNavigate } from "react-router";
 import { Button, Avatar } from "@mui/material";
