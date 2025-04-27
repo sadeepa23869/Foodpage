@@ -1,4 +1,4 @@
-package com.foodlearing.security;
+package com.skillsync.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

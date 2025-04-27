@@ -1,4 +1,4 @@
-package com.foodlearing.service;
+package com.skillsync.service;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;

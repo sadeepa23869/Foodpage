@@ -1,4 +1,4 @@
-package com.foodlearing.dto;
+package com.skillsync.dto;
 
 public class GoogleAuthRequest {
     private String credential; // The Google ID token (JWT) from the frontend

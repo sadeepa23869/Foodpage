@@ -1,13 +1,13 @@
-package com.foodlearing.controller;
+package com.skillsync.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.foodlearing.dto.AuthRequest;
-import com.foodlearing.dto.AuthResponse;
-import com.foodlearing.dto.GoogleAuthRequest;
-import com.foodlearing.entity.User;
-import com.foodlearing.repo.UserRepository;
-import com.foodlearing.security.JwtService;
+import com.skillsync.dto.AuthRequest;
+import com.skillsync.dto.AuthResponse;
+import com.skillsync.dto.GoogleAuthRequest;
+import com.skillsync.entity.User;
+import com.skillsync.repo.UserRepository;
+import com.skillsync.security.JwtService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

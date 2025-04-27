@@ -1,4 +1,4 @@
-package com.foodlearing.dto;
+package com.skillsync.dto;
 
 public class AuthRequest {
     private String email;
