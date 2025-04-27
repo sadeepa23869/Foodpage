@@ -34,11 +34,7 @@ export const NavigationMenu = [
     icon: <ListAlt />,
     path: "/learning-plans",
   },
-  {
-    title: "Learning Progress",
-    icon: <GroupIcon />,
-    path: "/learningProgress",
-  },
+  
   {
     title: "Profile",
     icon: <AccountCircleIcon />,

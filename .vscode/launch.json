@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "foodlearningApplication",
+            "request": "launch",
+            "mainClass": "com.foodlearning.foodlearningApplication",
+            "projectName": "skillsync"
+        },
+        {
+            "type": "java",
             "name": "SkillsyncApplication",
             "request": "launch",
             "mainClass": "com.foodlearning.SkillsyncApplication",
