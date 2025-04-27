@@ -9,6 +9,13 @@
             "name": "foodlearningApplication",
             "request": "launch",
             "mainClass": "com.foodlearning.foodlearningApplication",
+            "projectName": "backend"
+        },
+        {
+            "type": "java",
+            "name": "foodlearningApplication",
+            "request": "launch",
+            "mainClass": "com.foodlearning.foodlearningApplication",
             "projectName": "skillsync"
         },
         {
