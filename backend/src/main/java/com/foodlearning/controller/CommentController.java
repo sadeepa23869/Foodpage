@@ -1,10 +1,10 @@
-package com.skillsync.controller;     //Standard controller package
+package com.foodlearning.controller;     //Standard controller package
 
-import com.skillsync.dto.CommentDTO;
-import com.skillsync.entity.Comment;
-import com.skillsync.security.JwtService;
-import com.skillsync.service.CommentService;
-import com.skillsync.repo.UserRepository;
+import com.foodlearning.dto.CommentDTO;
+import com.foodlearning.entity.Comment;
+import com.foodlearning.security.JwtService;
+import com.foodlearning.service.CommentService;
+import com.foodlearning.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
