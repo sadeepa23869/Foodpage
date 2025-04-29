@@ -27,7 +27,7 @@ const Navigation = ({ user, setCurrentSection, currentSection, onLogout }) => {
   };
 
   return (
-    <div className="py-5 flex flex-col items-center">
+    <div className="py-5 flex flex-col items-center ">
       <img src={logo} alt="Logo" className="w-32 h-auto mx-auto" />
       <div className="space-y-6">
         {/* User Profile Details */}
@@ -40,9 +40,9 @@ const Navigation = ({ user, setCurrentSection, currentSection, onLogout }) => {
           </div>
         )}
         {NavigationMenu.filter(item => item.title !== "Post" && item.title !== "Messages").map((item) => (
-          <div
+          <div 
             className={`cursor-pointer flex space-x-3 items-center ${
-              item.path.replace('/', '') === currentSection ? "text-blue-500" : ""
+              item.path.replace('/', '') === currentSection ? "text-yellow-500" : ""
             }`}
             onClick={() => handleSectionChange(item.path.replace('/', ''))}
             key={item.title}
