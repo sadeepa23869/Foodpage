@@ -1,9 +1,9 @@
-package com.skillsync.controller;
+package com.foodlearning.controller;
 
-import com.skillsync.dto.LearningProgressDTO;
-import com.skillsync.entity.LearningProgress;
-import com.skillsync.security.JwtService;
-import com.skillsync.service.LearningProgressService;
+import com.foodlearning.dto.LearningProgressDTO;
+import com.foodlearning.entity.LearningProgress;
+import com.foodlearning.security.JwtService;
+import com.foodlearning.service.LearningProgressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
