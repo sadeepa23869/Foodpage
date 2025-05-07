@@ -1,9 +1,9 @@
 package com.foodlearning.service;
 
-import com.skillsync.dto.LearningProgressDTO;
-import com.skillsync.entity.LearningProgress;
-import com.skillsync.entity.Topic;
-import com.skillsync.repo.LearningProgressRepository;
+import com.foodlearning.dto.LearningProgressDTO;
+import com.foodlearning.entity.LearningProgress;
+import com.foodlearning.entity.Topic;
+import com.foodlearning.repo.LearningProgressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
