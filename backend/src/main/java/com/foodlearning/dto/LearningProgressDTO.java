@@ -1,4 +1,4 @@
-package com.skillsync.dto;
+package com.foodlearning.dto;
 
 import com.skillsync.entity.Topic;
 import com.skillsync.entity.Resource;
