@@ -1,4 +1,4 @@
-package com.skillsync.entity;
+package com.foodlearning.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
