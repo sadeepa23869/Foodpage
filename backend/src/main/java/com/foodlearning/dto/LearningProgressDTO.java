@@ -1,7 +1,7 @@
 package com.foodlearning.dto;
 
-import com.skillsync.entity.Topic;
-import com.skillsync.entity.Resource;
+import com.foodlearning.entity.Topic;
+import com.foodlearning.entity.Resource;
 import lombok.Data;
 
 import java.time.LocalDateTime;
