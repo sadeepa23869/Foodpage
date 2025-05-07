@@ -1,6 +1,6 @@
 package com.foodlearning.repo;
 
-import com.skillsync.entity.LearningProgress;
+import com.foodlearning.entity.LearningProgress;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
