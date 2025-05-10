@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import { toast } from "react-toastify";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
 
 const LearningPlanCard = ({ plan, onEdit, onDelete }) => (
   <div className="bg-white rounded-lg shadow-md p-6 mb-6 max-w-xl mx-auto border border-gray-200">
@@ -94,8 +95,9 @@ const LearningPlans = () => {
             fetchLearningPlans();
             setEditIndex(null);
             resetForm();
+            toast.success("Learning Plan updated successfully!");
           })
-          .catch((err) => alert("Failed to update: " + err.message));
+          .catch((err) => toast.error("Failed to update: " + err.message));
       } else {
         fetch("http://localhost:4043/api/learningplans", {
           method: "POST",
@@ -112,8 +114,9 @@ const LearningPlans = () => {
           .then(() => {
             fetchLearningPlans();
             resetForm();
+            toast.success("Learning Plan added successfully!");
           })
-          .catch((err) => alert("Failed to create: " + err.message));
+          .catch((err) => toast.error("Failed to create: " + err.message));
       }
     },
   });
@@ -131,39 +134,41 @@ const LearningPlans = () => {
 
   const handleDelete = (index) => {
     const planId = learningPlans[index].id;
-    if (!window.confirm("Are you sure you want to delete this learning plan?")) return;
-    fetch(`http://localhost:4043/api/learningplans/${planId}`, {
-      method: "DELETE",
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Delete failed");
-        fetchLearningPlans();
-        if (editIndex === index) {
-          setEditIndex(null);
-          formik.resetForm();
-        }
-      })
-      .catch((err) => alert("Failed to delete: " + err.message));
-  };
-
-  const downloadPDF = () => {
-    const input = document.getElementById("plans-section");
-    html2canvas(input, { scale: 2 }).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save("learning-plans.pdf");
+    confirmAlert({
+      title: "Confirm Delete",
+      message: "Are you sure you want to delete this learning plan?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () => {
+            fetch(`http://localhost:4043/api/learningplans/${planId}`, {
+              method: "DELETE",
+            })
+              .then((res) => {
+                if (!res.ok) throw new Error("Delete failed");
+                fetchLearningPlans();
+                toast.success("Learning Plan deleted successfully!");
+              })
+              .catch((err) => toast.error("Failed to delete: " + err.message));
+          },
+        },
+        {
+          label: "No",
+          onClick: () => {},
+        },
+      ],
     });
   };
 
   return (
     <div className="learning-plans-container bg-gray-50 min-h-screen py-8">
-      <form className="bg-white max-w-xl mx-auto rounded-lg shadow-md p-6 mb-8 border border-blue-200" onSubmit={formik.handleSubmit}>
-        <h2 className="text-xl font-semibold mb-4 text-blue-700">{editIndex !== null ? 'Edit Learning Plan' : 'Create a New Learning Plan'}</h2>
+      <form
+        className="bg-white max-w-xl mx-auto rounded-lg shadow-md p-6 mb-8 border border-blue-200"
+        onSubmit={formik.handleSubmit}
+      >
+        <h2 className="text-xl font-semibold mb-4 text-blue-700">
+          {editIndex !== null ? "Edit Learning Plan" : "Create a New Learning Plan"}
+        </h2>
         <div className="mb-4">
           <label className="block mb-1 font-medium" htmlFor="name">Name</label>
           <input
@@ -194,7 +199,7 @@ const LearningPlans = () => {
           )}
         </div>
         <div className="mb-4">
-          <label className="block mb-1 font-medium" htmlFor="topics">Topics <span className="text-xs text-gray-500">(comma separated)</span></label>
+          <label className="block mb-1 font-medium" htmlFor="topics">Topics</label>
           <input
             id="topics"
             name="topics"
@@ -209,7 +214,7 @@ const LearningPlans = () => {
           )}
         </div>
         <div className="mb-6">
-          <label className="block mb-1 font-medium" htmlFor="resources">Resources <span className="text-xs text-gray-500">(comma separated)</span></label>
+          <label className="block mb-1 font-medium" htmlFor="resources">Resources</label>
           <input
             id="resources"
             name="resources"
@@ -228,7 +233,7 @@ const LearningPlans = () => {
             type="submit"
             className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition font-semibold"
           >
-            {editIndex !== null ? 'Update Learning Plan' : 'Add Learning Plan'}
+            {editIndex !== null ? "Update Learning Plan" : "Add Learning Plan"}
           </button>
           {editIndex !== null && (
             <button
@@ -241,28 +246,14 @@ const LearningPlans = () => {
           )}
         </div>
       </form>
-
-      {/* Download Button */}
-      <div className="max-w-xl mx-auto mb-4">
-        <button
-          className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded font-semibold"
-          onClick={downloadPDF}
-        >
-          Download PDF
-        </button>
-      </div>
-
-      {/* Learning Plan Cards */}
-      <div id="plans-section">
-        {learningPlans.map((plan, index) => (
-          <LearningPlanCard
-            key={plan.id}
-            plan={plan}
-            onEdit={() => handleEdit(index)}
-            onDelete={() => handleDelete(index)}
-          />
-        ))}
-      </div>
+      {learningPlans.map((plan, index) => (
+        <LearningPlanCard
+          key={plan.id}
+          plan={plan}
+          onEdit={() => handleEdit(index)}
+          onDelete={() => handleDelete(index)}
+        />
+      ))}
     </div>
   );
 };
