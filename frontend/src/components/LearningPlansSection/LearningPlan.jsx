@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const LearningPlanCard = ({ plan, onEdit, onDelete }) => (
   <div className="bg-white rounded-lg shadow-md p-6 mb-6 max-w-xl mx-auto border border-gray-200">
@@ -46,7 +48,6 @@ const LearningPlans = () => {
   const [learningPlans, setLearningPlans] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
 
-  // Fetch learning plans from backend
   const fetchLearningPlans = () => {
     fetch("http://localhost:4043/api/learningplans/my", {
       headers: {
@@ -79,7 +80,6 @@ const LearningPlans = () => {
         resources: values.resources.split(",").map((r) => r.trim()).filter(Boolean),
       };
       if (editIndex !== null) {
-        // Update
         const planId = learningPlans[editIndex].id;
         fetch(`http://localhost:4043/api/learningplans/${planId}`, {
           method: "PUT",
@@ -97,7 +97,6 @@ const LearningPlans = () => {
           })
           .catch((err) => alert("Failed to update: " + err.message));
       } else {
-        // Create
         fetch("http://localhost:4043/api/learningplans", {
           method: "POST",
           headers: {
@@ -145,6 +144,20 @@ const LearningPlans = () => {
         }
       })
       .catch((err) => alert("Failed to delete: " + err.message));
+  };
+
+  const downloadPDF = () => {
+    const input = document.getElementById("plans-section");
+    html2canvas(input, { scale: 2 }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save("learning-plans.pdf");
+    });
   };
 
   return (
@@ -228,14 +241,28 @@ const LearningPlans = () => {
           )}
         </div>
       </form>
-      {learningPlans.map((plan, index) => (
-        <LearningPlanCard
-          key={plan.id}
-          plan={plan}
-          onEdit={() => handleEdit(index)}
-          onDelete={() => handleDelete(index)}
-        />
-      ))}
+
+      {/* Download Button */}
+      <div className="max-w-xl mx-auto mb-4">
+        <button
+          className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded font-semibold"
+          onClick={downloadPDF}
+        >
+          Download PDF
+        </button>
+      </div>
+
+      {/* Learning Plan Cards */}
+      <div id="plans-section">
+        {learningPlans.map((plan, index) => (
+          <LearningPlanCard
+            key={plan.id}
+            plan={plan}
+            onEdit={() => handleEdit(index)}
+            onDelete={() => handleDelete(index)}
+          />
+        ))}
+      </div>
     </div>
   );
 };
