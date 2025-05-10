@@ -112,7 +112,7 @@ const HomeSection = ({ user, refreshPosts }) => {
               {/* Media previews */}
               <div className="mt-3 space-y-2">
                 {selectedImages.length > 0 && (
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-67 gap-2">
                     {selectedImages.map((img, index) => (
                       <div key={index} className="relative group">
                         <img
