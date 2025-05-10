@@ -1,12 +1,33 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import logo from "../../assets/logo.png";
-import { NavigationMenu } from "../Navigation/NavigationMenu"; // Corrected import
+import { NavigationMenu } from "../Navigation/NavigationMenu";
 import { useNavigate } from "react-router";
-import { Button, Avatar } from "@mui/material";
+import { Button, Avatar, Badge } from "@mui/material";
+import { getUnreadCount } from "../../api"; // Import the API function
 
 const Navigation = ({ user, setCurrentSection, currentSection, onLogout }) => {
-  // Handle the closing of the menu
+  const [unreadCount, setUnreadCount] = useState(0);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const count = await getUnreadCount();
+        setUnreadCount(count);
+      } catch (error) {
+        console.error("Failed to fetch unread count:", error);
+      }
+    };
+    
+    // Fetch immediately and then every 30 seconds
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 30000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
   const handleClose = () => {
+    // Handle menu closing if needed
   };
 
   const handleLogout = () => {
@@ -14,11 +35,8 @@ const Navigation = ({ user, setCurrentSection, currentSection, onLogout }) => {
     handleClose();
   };
 
-  const navigate = useNavigate();
-
-  // Handle section change
   const handleSectionChange = (section) => {
-    setCurrentSection(section); // Update the current section
+    setCurrentSection(section);
     if (section === "profile") {
       navigate(`/profile/${section}`);
     } else {
@@ -27,7 +45,7 @@ const Navigation = ({ user, setCurrentSection, currentSection, onLogout }) => {
   };
 
   return (
-    <div className="py-5 flex flex-col items-center ">
+    <div className="py-5 flex flex-col items-center">
       <img src={logo} alt="Logo" className="w-32 h-auto mx-auto" />
       <div className="space-y-6">
         {/* User Profile Details */}
@@ -40,14 +58,20 @@ const Navigation = ({ user, setCurrentSection, currentSection, onLogout }) => {
           </div>
         )}
         {NavigationMenu.filter(item => item.title !== "Post" && item.title !== "Messages").map((item) => (
-          <div 
+          <div
             className={`cursor-pointer flex space-x-3 items-center ${
-              item.path.replace('/', '') === currentSection ? "text-yellow-500" : ""
+              item.path.replace('/', '') === currentSection ? "text-blue-500" : ""
             }`}
             onClick={() => handleSectionChange(item.path.replace('/', ''))}
             key={item.title}
           >
-            {item.icon}
+            {item.showBadge ? (
+              <Badge badgeContent={unreadCount} color="primary">
+                {item.icon}
+              </Badge>
+            ) : (
+              item.icon
+            )}
             <span className="font-semibold text-lg">{item.title}</span>
           </div>
         ))}
@@ -61,8 +85,6 @@ const Navigation = ({ user, setCurrentSection, currentSection, onLogout }) => {
           Logout
         </Button>
       </div>
-
-      {/* Removed duplicate profile section at the end of the navigation panel */}
     </div>
   );
 };
