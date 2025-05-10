@@ -15,15 +15,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/", "/api/users/**", "/api/learningplans/**", "/api/learning-progress/**", "/api/auth/**", "/api/posts/**", "/api/comments/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
-            .oauth2Login(oauth2 -> oauth2
-                .defaultSuccessUrl("/api/auth/oauth2/success", true)
-            );
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/api/users/**", "/api/learningplans/**", "/api/learning-progress/**",
+                                "/api/auth/**", "/api/posts/**", "/api/comments/**", "/api/notifications/**")
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .oauth2Login(oauth2 -> oauth2
+                        .defaultSuccessUrl("/api/auth/oauth2/success", true));
         return http.build();
     }
 

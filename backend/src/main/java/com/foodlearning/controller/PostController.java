@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -42,7 +43,7 @@ public class PostController {
             @RequestParam(required = false) String content,
             @RequestParam(required = false) List<MultipartFile> images,
             @RequestParam(required = false) MultipartFile video) throws IOException {
-
+        
         String userId = getUserIdFromAuthHeader(authHeader);
         Post post = postService.createPost(userId, content, images, video);
         return ResponseEntity.status(HttpStatus.CREATED).body(postService.convertToDTO(post));
@@ -80,33 +81,34 @@ public class PostController {
 
     @PutMapping("/{id}")
     public ResponseEntity<PostDTO> updatePost(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable String id,
-            @RequestParam String content) {
-
-        String userId = getUserIdFromAuthHeader(authHeader);
-        Post post = postService.getPostById(id);
-
-        if (!post.getUserId().equals(userId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        Post updatedPost = postService.updatePost(id, content);
-        return ResponseEntity.ok(postService.convertToDTO(updatedPost));
+        @RequestHeader("Authorization") String authHeader,
+        @PathVariable String id,
+        @RequestBody Map<String, String> requestBody) {  // Changed from @RequestParam to @RequestBody
+        
+    String userId = getUserIdFromAuthHeader(authHeader);
+    Post post = postService.getPostById(id);
+    
+    if (!post.getUserId().equals(userId)) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
+    
+    String content = requestBody.get("content");
+    Post updatedPost = postService.updatePost(id, content);
+    return ResponseEntity.ok(postService.convertToDTO(updatedPost));
+}
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable String id) {
-
+        
         String userId = getUserIdFromAuthHeader(authHeader);
         Post post = postService.getPostById(id);
-
+        
         if (!post.getUserId().equals(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-
+        
         postService.deletePost(id);
         return ResponseEntity.noContent().build();
     }
@@ -115,7 +117,7 @@ public class PostController {
     public ResponseEntity<PostDTO> likePost(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable String postId) {
-
+        
         String userId = getUserIdFromAuthHeader(authHeader);
         Post post = postService.likePost(postId, userId);
         return ResponseEntity.ok(postService.convertToDTO(post));
@@ -125,42 +127,47 @@ public class PostController {
     public ResponseEntity<PostDTO> unlikePost(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable String postId) {
-
+        
         String userId = getUserIdFromAuthHeader(authHeader);
         Post post = postService.unlikePost(postId, userId);
         return ResponseEntity.ok(postService.convertToDTO(post));
     }
 
-    @GetMapping("/media/{fileId}")
+    
+
+   @GetMapping("/media/{fileId}")
     public ResponseEntity<byte[]> getMedia(@PathVariable String fileId) {
         try {
-            GridFSFile file = fileStorageService.getGridFsFile(fileId);
-            if (file == null) {
-                return ResponseEntity.notFound().build();
+         GridFSFile file = fileStorageService.getGridFsFile(fileId);
+         if (file == null) {
+            return ResponseEntity.notFound().build();
             }
 
-            GridFsResource resource = fileStorageService.getGridFsResource(file);
-            InputStream inputStream = resource.getInputStream();
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            int nRead;
-            byte[] data = new byte[4096];
+        GridFsResource resource = fileStorageService.getGridFsResource(file);
+        InputStream inputStream = resource.getInputStream();
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int nRead;
+        byte[] data = new byte[4096];
 
-            while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
-                buffer.write(data, 0, nRead);
-            }
+        while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
 
-            buffer.flush();
-            byte[] fileBytes = buffer.toByteArray();
+        buffer.flush();
+        byte[] fileBytes = buffer.toByteArray();
 
-            String contentType = resource.getContentType();
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(
-                            contentType != null ? contentType : MediaType.APPLICATION_OCTET_STREAM_VALUE))
-                    .body(fileBytes);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        String contentType = resource.getContentType();
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(
+                        contentType != null ? contentType : MediaType.APPLICATION_OCTET_STREAM_VALUE
+                ))
+                .body(fileBytes);
+    } catch (IOException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+
 
     private String getUserIdFromAuthHeader(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {

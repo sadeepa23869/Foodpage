@@ -212,7 +212,7 @@ const PostCard = ({ post, user, refreshPosts }) => {
           <div className="flex justify-between mt-3 text-gray-500">
         <button 
           className="flex items-center space-x-1 hover:text-blue-500"
-          onClick={handleCommentModalOpen} // Changed to open modal
+          onClick={handleCommentModalOpen} // open comment modal
         >
           <ChatBubbleOutline fontSize="small" />
           <span>{post.comments?.length || 0}</span>

@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
 @Service
 public class PostService {
@@ -35,6 +35,7 @@ public class PostService {
         Post post = new Post();
         post.setUserId(userId);
         post.setContent(content);
+        post.setCreatedAt(LocalDateTime.now());
 
         if (images != null && !images.isEmpty()) {
             if (images.size() > 3) {
@@ -90,6 +91,24 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
+    /*
+     * public Post likePost(String postId, String userId) {
+     * Post post = postRepository.findById(postId)
+     * .orElseThrow(() -> new PostNotFoundException("Post not found with id: " +
+     * postId));
+     * 
+     * if (!post.getLikedBy().contains(userId)) {
+     * post.getLikedBy().add(userId);
+     * post.setLikesCount(post.getLikesCount() + 1);
+     * return postRepository.save(post);
+     * }
+     * return post;
+     * }
+     */
+
+    @Autowired
+    private NotificationService notificationService;
+
     public Post likePost(String postId, String userId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
@@ -97,6 +116,17 @@ public class PostService {
         if (!post.getLikedBy().contains(userId)) {
             post.getLikedBy().add(userId);
             post.setLikesCount(post.getLikesCount() + 1);
+
+            // Send notification to post owner
+            if (!post.getUserId().equals(userId)) { // Don't notify yourself
+                notificationService.createNotification(
+                        post.getUserId(),
+                        userId,
+                        "like",
+                        "liked your post",
+                        postId);
+            }
+
             return postRepository.save(post);
         }
         return post;

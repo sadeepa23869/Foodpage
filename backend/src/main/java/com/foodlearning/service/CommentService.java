@@ -2,8 +2,11 @@ package com.foodlearning.service;  //Standard package for service classes
 
 import com.foodlearning.dto.CommentDTO;
 import com.foodlearning.entity.Comment;
+import com.foodlearning.entity.Post;
 import com.foodlearning.exception.CommentNotFoundException;
+import com.foodlearning.exception.PostNotFoundException;
 import com.foodlearning.repo.CommentRepository;
+import com.foodlearning.repo.PostRepository;
 import com.foodlearning.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,19 +16,44 @@ import java.util.List;
 @Service  //Marks this as a Spring service component
 public class CommentService {
 
+    //Dependancy injections
     @Autowired
     private CommentRepository commentRepository; // For database operations on comments
 
     @Autowired
     private UserRepository userRepository;  //To fetch user details when converting to DTOs
 
+    @Autowired
+    private PostRepository postRepository;
+
+    @Autowired
+    private NotificationService notificationService;    
+
     public Comment createComment(String postId, String userId, String content) {
         Comment comment = new Comment();
-        comment.setPostId(postId);  //The post being commented on
-        comment.setUserId(userId);  // Author of the comment
-        comment.setContent(content);  // Comment text
-        comment.setCreatedAt(LocalDateTime.now()); //Sets current timestamp
-        return commentRepository.save(comment);  //Saves to database
+        comment.setPostId(postId);
+        comment.setUserId(userId);
+        comment.setContent(content);
+        comment.setCreatedAt(LocalDateTime.now());
+        
+        Comment savedComment = commentRepository.save(comment);
+        
+        // Get post to notify owner
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post not found"));
+        
+        // Notify post owner (unless they're commenting on their own post)
+        if (!post.getUserId().equals(userId)) {
+            notificationService.createNotification(
+                post.getUserId(),
+                userId,
+                "comment",
+                "commented on your post",
+                postId
+            );
+        }
+        
+        return savedComment;
     }
 
     public Comment getCommentById(String id) {  //Retrieves a single comment
@@ -46,13 +74,21 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    public void deleteComment(String id, String userId) {  //Deletes a comment
-        Comment comment = getCommentById(id);
-        if (!comment.getUserId().equals(userId)) {  ///Verifies requesting user owns the comment
-            throw new RuntimeException("Not authorized to delete this comment");
-        }
-        commentRepository.deleteById(id);
+    // In CommentService.java
+    public void deleteComment(String id, String userId) {
+    Comment comment = getCommentById(id);
+    
+    // Get the post to check ownership
+    Post post = postRepository.findById(comment.getPostId())
+            .orElseThrow(() -> new PostNotFoundException("Post not found"));
+    
+    // Allow deletion if user is comment owner OR post owner
+    if (!comment.getUserId().equals(userId) && !post.getUserId().equals(userId)) {
+        throw new RuntimeException("Not authorized to delete this comment");
     }
+    
+    commentRepository.deleteById(id);
+}
 
     public CommentDTO convertToDTO(Comment comment) {  //Converts Comment entity to CommentDTO
         CommentDTO dto = new CommentDTO();

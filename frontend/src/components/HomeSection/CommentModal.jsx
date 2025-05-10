@@ -306,9 +306,9 @@ export default function CommentModal({
                                                     <p className="text-gray-800 mt-1">{comment.content}</p>
                                                 </div>
                                                 
-                                                
-                                                {/* Only show menu if current user is the comment creator */}
-                                                {user?.id === comment.userId && (
+                                            
+                                                {/* Only show menu if current user is the comment creator OR post owner */}
+                                                {(user?.id === comment.userId || user?.id === post.userId) && (
                                                     <div className="relative">
                                                         <button 
                                                             onClick={(e) => {
@@ -340,16 +340,19 @@ export default function CommentModal({
                                                                 }
                                                             }}
                                                         >
-                                                            <MenuItem
-                                                                onClick={handleEdit}
-                                                                sx={{
-                                                                    minHeight: "32px",
-                                                                    padding: "0 8px",
-                                                                    display: "flex",
-                                                                    justifyContent: "center",
-                                                                }}>
-                                                                <EditIcon sx={{ fontSize: "12px", color: "blue"}} />
-                                                            </MenuItem>
+                                                            {/* Only show edit option to comment creator */}
+                                                            {user?.id === comment.userId && (
+                                                                <MenuItem
+                                                                    onClick={handleEdit}
+                                                                    sx={{
+                                                                        minHeight: "32px",
+                                                                        padding: "0 8px",
+                                                                        display: "flex",
+                                                                        justifyContent: "center",
+                                                                    }}>
+                                                                    <EditIcon sx={{ fontSize: "12px", color: "blue"}} />
+                                                                </MenuItem>
+                                                            )}
 
                                                             <MenuItem
                                                                 onClick={handleDelete}

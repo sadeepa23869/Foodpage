@@ -100,3 +100,58 @@ export const deleteComment = async (commentId) => {
     throw error;
   }
 };
+
+// Notification API functions
+// Notification API functions
+export const getNotifications = async () => {
+  try {
+    const response = await api.get('/api/notifications');
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 401) {
+      // Handle unauthorized (redirect to login)
+      window.location.href = '/login';
+    }
+    throw error;
+  }
+};
+
+export const getUnreadNotifications = async () => {
+  try {
+    const response = await api.get('/api/notifications/unread');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching unread notifications:', error);
+    throw error;
+  }
+};
+
+export const getUnreadCount = async () => {
+  try {
+    const response = await api.get('/api/notifications/unread-count');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching unread count:', error);
+    throw error;
+  }
+};
+
+export const markNotificationAsRead = async (notificationId) => {
+  try {
+    const response = await api.put(`/api/notifications/${notificationId}/read`);
+    return response.data;
+  } catch (error) {
+    console.error('Error marking notification as read:', error);
+    throw error;
+  }
+};
+
+export const markAllNotificationsAsRead = async () => {
+  try {
+    const response = await api.put('/api/notifications/read-all');
+    return response.data;
+  } catch (error) {
+    console.error('Error marking all notifications as read:', error);
+    throw error;
+  }
+};
