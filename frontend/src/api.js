@@ -141,7 +141,7 @@ export const markNotificationAsRead = async (notificationId) => {
     const response = await api.put(`/api/notifications/${notificationId}/read`);
     return response.data;
   } catch (error) {
-    console.error('Error marking notification as read:', error);
+    console.error('Error marking notification as read this page:', error);
     throw error;
   }
 };
@@ -151,7 +151,7 @@ export const markAllNotificationsAsRead = async () => {
     const response = await api.put('/api/notifications/read-all');
     return response.data;
   } catch (error) {
-    console.error('Error marking all notifications as read:', error);
+    console.error('Error marking all notifications as read this page:', error);
     throw error;
   }
 };
