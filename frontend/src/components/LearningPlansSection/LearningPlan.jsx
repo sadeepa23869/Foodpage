@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { toast } from "react-toastify";
-import { confirmAlert } from "react-confirm-alert";
-import "react-confirm-alert/src/react-confirm-alert.css";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import ConfirmationModal from "../ConfirmationModal/ConfirmationModal.jsx";
+import { FaFilePdf } from 'react-icons/fa';
 
 const LearningPlanCard = ({ plan, onEdit, onDelete }) => (
   <div className="bg-white rounded-lg shadow-md p-6 mb-6 max-w-xl mx-auto border border-gray-200">
@@ -38,16 +41,12 @@ const LearningPlanCard = ({ plan, onEdit, onDelete }) => (
   </div>
 );
 
-const validationSchema = Yup.object().shape({
-  name: Yup.string().required("Name is required"),
-  description: Yup.string().required("Description is required"),
-  topics: Yup.string().required("At least one topic is required"),
-  resources: Yup.string().required("At least one resource is required"),
-});
-
 const LearningPlans = () => {
   const [learningPlans, setLearningPlans] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+  const [deleteIndex, setDeleteIndex] = useState(null); // Store the index of the plan to delete
 
   const fetchLearningPlans = () => {
     fetch("http://localhost:4043/api/learningplans/my", {
@@ -64,6 +63,10 @@ const LearningPlans = () => {
     fetchLearningPlans();
   }, []);
 
+  const filteredPlans = learningPlans.filter(plan =>
+    plan.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -71,7 +74,12 @@ const LearningPlans = () => {
       topics: "",
       resources: "",
     },
-    validationSchema,
+    validationSchema: Yup.object().shape({
+      name: Yup.string().required("Name is required"),
+      description: Yup.string().required("Description is required"),
+      topics: Yup.string().required("At least one topic is required"),
+      resources: Yup.string().required("At least one resource is required"),
+    }),
     enableReinitialize: true,
     onSubmit: (values, { resetForm }) => {
       const plan = {
@@ -95,9 +103,9 @@ const LearningPlans = () => {
             fetchLearningPlans();
             setEditIndex(null);
             resetForm();
-            toast.success("Learning Plan updated successfully!");
+            toast.success("Learning plan updated successfully!");
           })
-          .catch((err) => toast.error("Failed to update: " + err.message));
+          .catch((err) => alert("Failed to update: " + err.message));
       } else {
         fetch("http://localhost:4043/api/learningplans", {
           method: "POST",
@@ -114,9 +122,9 @@ const LearningPlans = () => {
           .then(() => {
             fetchLearningPlans();
             resetForm();
-            toast.success("Learning Plan added successfully!");
+            toast.success("Learning plan added successfully!");
           })
-          .catch((err) => toast.error("Failed to create: " + err.message));
+          .catch((err) => alert("Failed to create: " + err.message));
       }
     },
   });
@@ -132,42 +140,54 @@ const LearningPlans = () => {
     });
   };
 
-  const handleDelete = (index) => {
-    const planId = learningPlans[index].id;
-    confirmAlert({
-      title: "Confirm Delete",
-      message: "Are you sure you want to delete this learning plan?",
-      buttons: [
-        {
-          label: "Yes",
-          onClick: () => {
-            fetch(`http://localhost:4043/api/learningplans/${planId}`, {
-              method: "DELETE",
-            })
-              .then((res) => {
-                if (!res.ok) throw new Error("Delete failed");
-                fetchLearningPlans();
-                toast.success("Learning Plan deleted successfully!");
-              })
-              .catch((err) => toast.error("Failed to delete: " + err.message));
-          },
-        },
-        {
-          label: "No",
-          onClick: () => {},
-        },
-      ],
-    });
+  const handleDeleteClick = (index) => {
+    setDeleteIndex(index);
+    setIsModalOpen(true);
   };
 
+  const handleDelete = () => {
+    const planId = learningPlans[deleteIndex].id;
+    fetch(`http://localhost:4043/api/learningplans/${planId}`, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Delete failed");
+        fetchLearningPlans();
+        setIsModalOpen(false);
+        toast.success("Learning plan deleted successfully!");
+      })
+      .catch((err) => alert("Failed to delete: " + err.message));
+  };
+
+  const handleDownloadPDF = () => {
+  const doc = new jsPDF();
+  doc.text("My Learning Plans", 14, 16);
+
+  const rows = learningPlans.map((plan, index) => [
+    index + 1,
+    plan.name,
+    plan.description,
+    plan.topics.join(", "),
+    plan.resources.join(", "),
+  ]);
+
+  autoTable(doc, {
+    startY: 20,
+    head: [["Plan Number", "Name", "Description", "Topics", "Resources"]],
+    body: rows,
+  });
+
+  doc.save("learning_plans.pdf");
+};
+
   return (
-    <div className="learning-plans-container bg-gray-50 min-h-screen py-8">
+    <div className="learning-plans-container bg-gray-50 min-h-screen py-8 px-4">
       <form
         className="bg-white max-w-xl mx-auto rounded-lg shadow-md p-6 mb-8 border border-blue-200"
         onSubmit={formik.handleSubmit}
       >
         <h2 className="text-xl font-semibold mb-4 text-blue-700">
-          {editIndex !== null ? "Edit Learning Plan" : "Create a New Learning Plan"}
+          {editIndex !== null ? 'Edit Learning Plan' : 'Create a New Learning Plan'}
         </h2>
         <div className="mb-4">
           <label className="block mb-1 font-medium" htmlFor="name">Name</label>
@@ -175,7 +195,7 @@ const LearningPlans = () => {
             id="name"
             name="name"
             type="text"
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full border rounded px-3 py-2"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.name}
@@ -189,7 +209,7 @@ const LearningPlans = () => {
           <textarea
             id="description"
             name="description"
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full border rounded px-3 py-2"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.description}
@@ -199,12 +219,12 @@ const LearningPlans = () => {
           )}
         </div>
         <div className="mb-4">
-          <label className="block mb-1 font-medium" htmlFor="topics">Topics</label>
+          <label className="block mb-1 font-medium" htmlFor="topics">Topics (comma separated)</label>
           <input
             id="topics"
             name="topics"
             type="text"
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full border rounded px-3 py-2"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.topics}
@@ -214,12 +234,12 @@ const LearningPlans = () => {
           )}
         </div>
         <div className="mb-6">
-          <label className="block mb-1 font-medium" htmlFor="resources">Resources</label>
+          <label className="block mb-1 font-medium" htmlFor="resources">Resources (comma separated)</label>
           <input
             id="resources"
             name="resources"
             type="text"
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full border rounded px-3 py-2"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.resources}
@@ -229,11 +249,8 @@ const LearningPlans = () => {
           )}
         </div>
         <div className="flex space-x-2">
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition font-semibold"
-          >
-            {editIndex !== null ? "Update Learning Plan" : "Add Learning Plan"}
+          <button type="submit" className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition font-semibold">
+            {editIndex !== null ? 'Update Learning Plan' : 'Add Learning Plan'}
           </button>
           {editIndex !== null && (
             <button
@@ -246,14 +263,40 @@ const LearningPlans = () => {
           )}
         </div>
       </form>
-      {learningPlans.map((plan, index) => (
+
+      <div className="max-w-xl mx-auto mb-4 flex justify-between items-center">
+        <input
+          type="text"
+          placeholder="Search by name..."
+          className="border px-3 py-2 rounded w-full mr-2"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+       <button
+       onClick={handleDownloadPDF}
+       className="bg-blue-500 text-white p-2 rounded hover:bg-blue-400"
+       >
+       <FaFilePdf />
+       </button>
+      </div>
+
+      {filteredPlans.map((plan, index) => (
         <LearningPlanCard
           key={plan.id}
           plan={plan}
           onEdit={() => handleEdit(index)}
-          onDelete={() => handleDelete(index)}
+          onDelete={() => handleDeleteClick(index)}
         />
       ))}
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleDelete}
+      />
+
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };
